@@ -222,7 +222,7 @@ def telescope_requirements(study, scan_name):
 def export_analysis(study: Study, output: Path):
     output.mkdir(parents=True, exist_ok=True)
     dependencies = {}
-    for name in ("numpy", "matplotlib", "build123d"):
+    for name in ("numpy", "matplotlib", "build123d", "ocp-gordon", "cadquery-ocp"):
         try:
             dependencies[name] = version(name)
         except PackageNotFoundError:

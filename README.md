@@ -20,6 +20,8 @@ ZIPを展開した`viewer.html`をブラウザで開くと、回転角・視点�
 
 Python 3.12以上を使用する。
 
+CAD用の依存関係は、動作確認したbuild123d 0.10.0とocp-gordon 0.1.18を指定している。`.[cad]`で対応する組み合わせを導入する。
+
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate

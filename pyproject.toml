@@ -10,7 +10,8 @@ requires-python = ">=3.12"
 dependencies = ["numpy>=2.0,<3", "matplotlib>=3.9,<4", "Pillow>=10,<13"]
 
 [project.optional-dependencies]
-cad = ["build123d==0.10.0"]
+# build123d 0.10 uses OCP 7.8; newer ocp-gordon releases require OCP 8.
+cad = ["build123d==0.10.0", "ocp-gordon==0.1.18"]
 
 [project.scripts]
 tesseract = "tesseract.cli:main"
