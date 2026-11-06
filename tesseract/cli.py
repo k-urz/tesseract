@@ -10,7 +10,7 @@ from .config import load_config
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Tesseract geometry study and experimental CAD (mm, degrees)")
-    parser.add_argument("command", choices=["analyze", "render", "cad", "all"])
+    parser.add_argument("command", choices=["analyze", "render", "cad", "all", "constraints"])
     parser.add_argument("--config", type=Path, help="TOML settings; built-in defaults when omitted")
     parser.add_argument("--output", type=Path, default=Path("output"))
     args = parser.parse_args(argv)
@@ -19,6 +19,9 @@ def main(argv=None):
         print(f"Analyzing {config.model.plane} / {config.model.projection}, config {config.digest()}…", flush=True)
         study = analyze(config)
         export_analysis(study, args.output)
+        if args.command == "constraints":
+            from .constraints import export_constraints
+            export_constraints(study, args.output / "constraints")
         if args.command in ("render", "all"):
             from .render import render
             render(study, args.output)
