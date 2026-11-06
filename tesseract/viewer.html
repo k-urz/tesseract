@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tesseract · Motion study</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#e1e9ef;background:#101b28;color-scheme:dark}*{box-sizing:border-box}body{margin:0}main{max-width:1340px;margin:auto;padding:30px}header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}h1{font-size:30px;font-weight:550;margin:5px 0}.eyebrow{color:#75c6c4;font-size:12px;letter-spacing:.16em}.muted{color:#9bafbd;font-size:13px}select,button{background:#1e3041;border:1px solid #365063;color:inherit;border-radius:7px;padding:10px;cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #72d2ca}button:hover{background:#2a4358}.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px}.stage{background:#132232;border:1px solid #294052;border-radius:12px;overflow:hidden}canvas{display:block;width:100%;height:560px;touch-action:none;cursor:grab}.controls{padding:18px;border-top:1px solid #294052;display:flex;gap:14px;align-items:center}.controls input{flex:1;min-width:40px;accent-color:#6bd3c9}output{font-variant-numeric:tabular-nums;min-width:68px}.panel{padding:22px;background:#172737;border:1px solid #294052;border-radius:12px}.metric{border-bottom:1px solid #294052;padding:18px 0}.metric:first-child{padding-top:0}.metric strong{display:block;font-size:25px;font-weight:500;margin-top:5px}.status{margin:18px 0;font-size:14px;line-height:1.7}.ok{color:#72d6c1}.warn{color:#ffa78a}label.toggle{display:flex;align-items:center;gap:10px;margin:15px 0;font-size:14px}.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:12px;color:#b1c4d0}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}.details{font-size:12px;color:#9bafbd;line-height:1.8;margin-top:20px;white-space:pre-line}.note{line-height:1.9;margin-top:22px;font-size:13px;color:#9bafbd}.error{display:none;padding:20px;background:#4b2929}footer{margin-top:20px;font-size:11px;color:#7892a5}@media(max-width:850px){main{padding:18px}header{align-items:flex-start;flex-direction:column}.layout{grid-template-columns:1fr}canvas{height:420px}.panel{padding:18px}.metric{display:inline-block;width:48%;vertical-align:top}select{max-width:100%}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body><main>
+<header><div><div class="eyebrow">GEOMETRY LAB / 01</div><h1>Tesseract motion study</h1><div class="muted">4次元の回転から、実物の可動範囲へ</div></div>
+<label>表示 <select id="scan"><option value="prototype_candidate">30 cm · 試作候補区間</option><option value="prototype_full">30 cm · 全周</option><option value="target_candidate">15 cm · 試作候補区間</option><option value="target_full">15 cm · 全周</option></select></label></header>
+<div class="error" id="error" role="alert"></div>
+<div class="layout"><section class="stage" aria-label="4D回転の3D投影">
+<canvas id="view" aria-label="ドラッグで視点回転、ホイールで拡大縮小。回転角は下のスライダーで操作できます。"></canvas>
+<div class="controls"><button id="play" type="button" aria-pressed="false">▶ 再生</button><input id="angle" aria-label="4D回転角" type="range" min="0" step="1"><output id="degree" for="angle"></output><button id="reset" type="button">視点を戻す</button></div>
+</section><aside class="panel">
+<div class="metric"><span class="muted">最小すき間</span><strong id="clearance">—</strong></div>
+<div class="metric"><span class="muted">辺長の範囲</span><strong id="length">—</strong></div>
+<div class="status" id="status" role="status"></div>
+<label class="toggle"><input id="vertices" type="checkbox" checked>頂点番号</label>
+<label class="toggle"><input id="edges" type="checkbox">辺番号</label>
+<label class="toggle"><input id="envelopes" type="checkbox">部品の太さを表示</label>
+<div class="details" id="details"></div>
+</aside></div>
+<div class="legend"><span><i class="dot" style="background:#77c9cb"></i>x / y / z方向の辺</span><span><i class="dot" style="background:#e4b877"></i>w方向の辺</span><span><i class="dot" style="background:#ff8667"></i>干渉候補</span></div>
+<p class="note">ドラッグで視点を回転、ホイールで拡大縮小できます。模型の大きさを切り替えても部品寸法は共通です。<br>表示は目標座標と単純化した部品外形の検査結果です。連動機構・重力・摩擦・保持力は未検証で、サンプル間の無衝突を保証するものではありません。</p>
+<footer id="provenance"></footer>
+</main>
+<script>
+"use strict";
+const DATA=/*__STUDY__*/null;
+if(!DATA){document.getElementById('error').style.display='block';document.getElementById('error').textContent='このファイルはテンプレートです。python -m tesseract render で生成したviewer.htmlを開いてください。';}
+else {
+const $=id=>document.getElementById(id),canvas=$('view'),ctx=canvas.getContext('2d');
+let scanName='prototype_candidate',index=0,yaw=.65,pitch=-.4,zoom=1,playing=false,last=0,drag=null;
+const names={prototype_candidate:'試作候補',prototype_full:'全周',target_candidate:'試作候補',target_full:'全周'};
+for(const option of $('scan').options){const s=DATA.scans[option.value].summary;option.textContent=`${s.size_mm/10} cm · ${names[option.value]}`;}
+const fmt=n=>n==null?'未定義':Number(n).toFixed(2);
+function current(){return DATA.scans[scanName].frames[index];}
+function camera(p){const c=Math.cos(yaw),s=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);const x=p[0]*c-p[2]*s,z=p[0]*s+p[2]*c;return [x,p[1]*cp-z*sp,p[1]*sp+z*cp];}
+function screen(p){const q=camera(p),size=DATA.config.model.size_mm,unit=Math.min(canvas.clientWidth,canvas.clientHeight)*.72/size*zoom;const k=4*size/(4*size+q[2]);return [canvas.clientWidth/2+q[0]*unit*k,canvas.clientHeight/2-q[1]*unit*k,q[2],unit*k];}
+function draw(){
+ const w=canvas.clientWidth,h=canvas.clientHeight,dpr=window.devicePixelRatio||1;
+ if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+ ctx.strokeStyle='#1f3546';ctx.lineWidth=1;
+ for(let x=w/2%40;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+ for(let y=h/2%40;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+ const f=current(),valid=f.points.every(p=>p.every(n=>Number.isFinite(n))),check=f.check;
+ if(valid){
+  const projected=f.points.map(screen),order=DATA.edges.map((pair,i)=>({pair,i,z:(projected[pair[0]][2]+projected[pair[1]][2])/2})).sort((a,b)=>b.z-a.z);
+  for(const {pair,i} of order){const a=projected[pair[0]],b=projected[pair[1]],bad=check.colliding_edges.includes(i);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineWidth=$('envelopes').checked?Math.max(2,DATA.config.hardware.tube_width_mm*Math.SQRT2*(a[3]+b[3])/2):2;ctx.lineCap='round';ctx.strokeStyle=bad?'#ff8667':((pair[0]^pair[1])===8?'#e4b877':'#77c9cb');ctx.globalAlpha=$('envelopes').checked?.55:.95;ctx.stroke();ctx.globalAlpha=1;
+   if($('edges').checked){ctx.fillStyle='#b6c9d6';ctx.font='11px system-ui';ctx.fillText('E'+i,(a[0]+b[0])/2+4,(a[1]+b[1])/2-4);}
+  }
+  projected.forEach((p,i)=>{ctx.beginPath();ctx.arc(p[0],p[1],$('envelopes').checked?DATA.config.hardware.hub_radius_mm*p[3]:4,0,2*Math.PI);ctx.fillStyle=check.colliding_vertices.includes(i)?'#ff8667':'#c6e9e7';ctx.globalAlpha=$('envelopes').checked?.4:1;ctx.fill();ctx.globalAlpha=1;if($('vertices').checked){ctx.font='12px system-ui';ctx.fillStyle='#eef5f8';ctx.fillText('V'+i,p[0]+7,p[1]-7);}});
+ }else{ctx.fillStyle='#ffa78a';ctx.font='16px system-ui';ctx.fillText('この角度では投影を定義できません',30,h/2);}
+ const finite=f.lengths.filter(Number.isFinite);
+ $('degree').textContent=f.angle.toFixed(1)+'°';$('clearance').textContent=fmt(check.minimum_clearance_mm)+' mm';$('length').textContent=finite.length?`${Math.min(...finite).toFixed(1)}–${Math.max(...finite).toFixed(1)} mm`:'未定義';
+ $('status').className='status '+(check.blocked?'warn':'ok');$('status').textContent=check.projection_invalid?'投影条件の変更が必要です':check.blocked?'部品外形に干渉候補があります':'このサンプルでは公称外形の干渉なし';
+ $('details').textContent=check.critical_pairs.map(p=>{const ids=p.edges?p.edges.map(i=>'E'+i).join(' / '):p.vertices?p.vertices.map(i=>'V'+i).join(' / '):'V'+p.vertex_edge[0]+' / E'+p.vertex_edge[1];return ids+': '+fmt(p.clearance_mm)+' mm';}).join('\n');
+}
+function select(){scanName=$('scan').value;const frames=DATA.scans[scanName].frames;index=frames.reduce((best,f,i)=>Math.abs(f.angle)<Math.abs(frames[best].angle)?i:best,0);$('angle').max=frames.length-1;$('angle').value=index;draw();}
+$('scan').addEventListener('change',select);$('angle').addEventListener('input',()=>{index=Number($('angle').value);draw();});
+$('play').addEventListener('click',()=>{playing=!playing;$('play').textContent=playing?'⏸ 停止':'▶ 再生';$('play').setAttribute('aria-pressed',String(playing));});
+$('reset').addEventListener('click',()=>{yaw=.65;pitch=-.4;zoom=1;draw();});
+for(const id of ['vertices','edges','envelopes'])$(id).addEventListener('change',draw);
+canvas.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;yaw+=(e.clientX-drag[0])*.008;pitch=Math.max(-1.5,Math.min(1.5,pitch+(e.clientY-drag[1])*.008));drag=[e.clientX,e.clientY];draw();});
+canvas.addEventListener('pointerup',()=>drag=null);canvas.addEventListener('pointercancel',()=>drag=null);
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.3,Math.min(3,zoom*Math.exp(-e.deltaY*.001)));draw();},{passive:false});
+window.addEventListener('resize',draw);
+$('provenance').textContent=`Config ${DATA.config_id} / ${DATA.config.model.plane} rotation / ${DATA.config.model.projection} projection / mm, degrees / offline`;
+function tick(now){if(playing&&now-last>=50){index=(index+1)%DATA.scans[scanName].frames.length;$('angle').value=index;last=now;draw();}requestAnimationFrame(tick);}
+select();requestAnimationFrame(tick);
+}
+</script></body></html>

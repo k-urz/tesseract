@@ -6,7 +6,81 @@
 
 ## 現在の状態
 
-計画・要求整理の段階。リポジトリには、まだ実装・CAD・試作の測定結果はない。
+数学モデル、干渉検査、オフライン可視化、試作用CAD生成を実装した。実物の測定結果はまだない。
+
+最終目標は約15 cm。まず必要なら約30 cmで検証する。手動で変形させ、固定機構や支持台を利用できる。家庭用FDMの設備は前提とせず、市販材・外注造形・加工サービスを比較する。
+
+![操作画面](examples/viewer.png)
+
+[生成例・分析結果](examples/README.md) / [ビューア・CAD一式をダウンロード](examples/default-pack.zip) / [製作方法の比較](docs/manufacturing.md)
+
+ZIPを展開した`viewer.html`をブラウザで開くと、回転角・視点・サイズ・部品外形の表示を操作できる。ネット接続やサーバーは不要。
+
+## 実行方法
+
+Python 3.12以上を使用する。
+
+CAD用の依存関係は、動作確認したbuild123d 0.10.0とocp-gordon 0.1.18を指定している。`.[cad]`で対応する組み合わせを導入する。
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[cad]'
+python -m tesseract all --config config/default.toml --output output
+```
+
+Windowsでは仮想環境の有効化に`.venv\Scripts\activate`を使う。CADが不要なら`python -m pip install -e .`で導入し、`render`まで実行できる。
+
+```bash
+tesseract analyze --config config/default.toml --output output
+tesseract render --config config/default.toml --output output
+tesseract cad --config config/default.toml --output output
+python -m unittest discover -s tests -v
+```
+
+`uv`を使う場合は`uv run --extra cad tesseract all --config config/default.toml --output output`でも生成できる。
+
+| 操作 | 出力 |
+| --- | --- |
+| `analyze` | 全周・候補区間を両サイズで分析。`analysis.json`、設定スナップショット、辺ごと・角度ごとのCSV、`report.md` |
+| `render` | 分析結果に加え、オフライン`viewer.html`、要求グラフ`requirements.png`、姿勢例`motion.png` |
+| `cad` | 分析結果に加え、`cad/`内に各部品のSTEP/STL、部品表、組立・測定手順、寸法と再検査の記録 |
+| `all` | 上記すべて |
+
+各操作は渡された設定から再計算する。過去の分析ファイルを暗黙に使わない。単位はmm・度、力の実測はN。すき間は片側・半径・直径の別を設定コメントで明示する。
+
+配布用ZIPを更新する場合は、`all`で生成した後に`python scripts/package_example.py --output output`を実行する。設定IDと可視化ファイルのハッシュを検証し、異なる設定の分析・CAD・可視化が混在した場合は梱包を中止する。
+
+### 初期計算で分かったこと
+
+xw回転、投影距離4の透視投影、候補区間−15°〜＋15°、0.1°刻みの結果。部品寸法は両サイズで共通。
+
+| 外形上限 | 辺の長さ | 公称外形の最小すき間 | 干渉候補サンプル | 二段伸縮の収納・ストローク適合 |
+| --- | --- | --- | --- | --- |
+| 300 mm | 70.51〜244.75 mm | −1.49 mm | 152/301 | 24/32辺 |
+| 150 mm | 30.45〜105.69 mm | −5.55 mm | 301/301 | 12/32辺 |
+
+30 cmの公称外形で干渉がなかった連続サンプル群は−7.4°〜＋7.4°。これはサンプル間を含む可動保証ではない。締付けボスとねじ頭を含めて棒の外形を保守的に広げたCAD後の検査では、両サイズとも全候補サンプルが干渉候補になる。実配置を反映した設計変更が必要。
+
+CADは、伸縮辺1本、球＋分割ソケット、静的な4辺配置ゲージ、すき間比較片の計10部品。伸縮試験片はE21の必要範囲に対応する。球面接続は1方向の形状検査で10°まで干渉せず、15°で接触する。最終的な可動ハブや辺とのアダプタは未設計で、これらを組めば模型全体が成立するという意味ではない。
+
+設定と生成例の詳しい数値は[分析結果](examples/README.md)を参照する。製作前に加工方式別の制約と公差を確認する。
+
+### 可視化・CADの検証
+
+数学・距離計算・設定・部品の有効性・STEP再読込・STL・伸縮端での干渉について標準ライブラリの`unittest`で検証する。CAD未導入時はCADテストをスキップする。
+
+ブラウザの追加確認は、PlaywrightとChromiumを導入した環境で行える。
+
+```bash
+python -m pip install playwright
+python -m playwright install chromium
+python tests/browser_smoke.py output/viewer.html --screenshot output/viewer.png
+```
+
+回転角、再生・停止、表示切替、視点操作、スマートフォン幅、外部通信なしを確認する。システムのChromiumを使う場合は`CHROMIUM_EXECUTABLE`を指定できる。
+
+GitHub Actionsでも数学・CAD・生成・ブラウザ操作を検証し、生成ファイル一式を成果物として保存する。
 
 過去チャットは目的と条件の把握に用いる。制作手段、ソフトウェア、材料、寸法、製作順序は検証結果に応じて選び直す。
 
@@ -123,12 +197,14 @@ Julius von BismarckとBenjamin Mausによる2023年の可動作品。CERN Scienc
 | 測定手段 | ノギス、重量計、ばねばかりなど。寸法・質量・動き始める力・保持力を記録する |
 | 試験記録 | CADと試験片の版、材料、製作条件、測定値、動作動画、不具合と改善内容 |
 
-## 最初に取り組むこと
+## 次に取り組むこと
 
-- [ ] 再現したい変形を1つ選び、投影方法・回転範囲と完成仕様を仮決定する。
-- [ ] 16頂点・32辺の数学モデルを生成し、目標の変形動画を作る。
-- [ ] 辺長・角度の変化と、部品の太さを考慮した干渉の要求一覧を作る。
-- [ ] 要求を満たす伸縮辺・ジョイント・保持方法の候補を比較する。
+- [x] 初期の回転・投影・サイズ・候補区間を仮設定する。
+- [x] 16頂点・32辺の数学モデルと操作可能な投影アニメーションを作る。
+- [x] 辺長・角度・公称部品外形の干渉を調べ、15 cmと30 cmを比較する。
+- [x] 伸縮辺・球面接続・配置ゲージ・比較片の実験用CADと製作方法の比較を用意する。
+- [ ] 短い8辺の収納と、ジョイントの可動域・4辺ハブ・締結部配置を再設計する。
+- [ ] 外注先・市販材を選び、見積もりと受入条件を確認する。
 - [ ] 比較試験片を少量製作し、可動範囲・操作力・保持力・ガタを測る。
 
 最初の到達点は「目標の変形動画」「辺長・角度・干渉の要求一覧」「伸縮辺とジョイントの比較試験結果」がそろうこと。その結果から全体模型の構造、製作費、期間を具体化する。

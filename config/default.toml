@@ -1,0 +1,27 @@
+# Lengths: mm. Angles: degrees. Manufacturing method is deliberately unspecified.
+[model]
+plane = "xw"
+projection = "perspective"
+projection_distance = 4.0
+size_mm = 300.0
+target_size_mm = 150.0
+coarse_step_deg = 1.0
+candidate_start_deg = -15.0
+candidate_end_deg = 15.0
+fine_step_deg = 0.1
+
+[hardware]
+hub_radius_mm = 18.0
+tube_width_mm = 10.0
+tube_wall_mm = 1.5
+slide_clearance_mm = 0.3 # per side, nominal trial value, not a guaranteed fit
+min_overlap_mm = 20.0
+end_wall_mm = 2.0
+ball_radius_mm = 5.0
+neck_radius_mm = 2.0
+socket_clearance_mm = 0.2 # radial
+bolt_diameter_mm = 3.0 # interchangeable trial hardware, not a required standard
+hole_clearance_mm = 0.3 # diametral
+nut_across_flats_mm = 5.5
+nut_thickness_mm = 2.4
+fit_clearances_mm = [0.15, 0.25, 0.35, 0.5]
