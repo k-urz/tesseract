@@ -1,0 +1,339 @@
+{
+  "config_id": "66aebc68e650eb46",
+  "rank_tolerance": 1e-08,
+  "length_coordinate_units_for_rank": "normalized projected coordinates; nonzero Jacobian rows normalized",
+  "intrinsic_rotation_shape_dof_at_reference": 3,
+  "selected_local_angle_constraints": [
+    {
+      "corner_index": 0,
+      "vertex_id": 0,
+      "edge_a": 0,
+      "edge_b": 1
+    },
+    {
+      "corner_index": 1,
+      "vertex_id": 0,
+      "edge_a": 0,
+      "edge_b": 2
+    },
+    {
+      "corner_index": 2,
+      "vertex_id": 0,
+      "edge_a": 0,
+      "edge_b": 3
+    },
+    {
+      "corner_index": 3,
+      "vertex_id": 0,
+      "edge_a": 1,
+      "edge_b": 2
+    },
+    {
+      "corner_index": 4,
+      "vertex_id": 0,
+      "edge_a": 1,
+      "edge_b": 3
+    },
+    {
+      "corner_index": 9,
+      "vertex_id": 1,
+      "edge_a": 4,
+      "edge_b": 5
+    },
+    {
+      "corner_index": 10,
+      "vertex_id": 1,
+      "edge_a": 4,
+      "edge_b": 6
+    },
+    {
+      "corner_index": 15,
+      "vertex_id": 2,
+      "edge_a": 7,
+      "edge_b": 8
+    },
+    {
+      "corner_index": 16,
+      "vertex_id": 2,
+      "edge_a": 7,
+      "edge_b": 9
+    },
+    {
+      "corner_index": 27,
+      "vertex_id": 4,
+      "edge_a": 12,
+      "edge_b": 13
+    },
+    {
+      "corner_index": 28,
+      "vertex_id": 4,
+      "edge_a": 12,
+      "edge_b": 14
+    }
+  ],
+  "length_families": [
+    {
+      "name": "x_link_w-1",
+      "edge_ids": [
+        0,
+        7,
+        12,
+        17
+      ],
+      "representative_edge": 0,
+      "slope_nearest_zero_mm_per_rad": 0.0,
+      "min_abs_slope_mm_per_rad": 0.0,
+      "slope_min_mm_per_rad": -8.86249945891668,
+      "slope_max_mm_per_rad": 8.86249945891668,
+      "strictly_monotone_in_sampled_candidate": false
+    },
+    {
+      "name": "square_x-1_w-1",
+      "edge_ids": [
+        1,
+        2,
+        8,
+        13
+      ],
+      "representative_edge": 1,
+      "slope_nearest_zero_mm_per_rad": -27.170054512471985,
+      "min_abs_slope_mm_per_rad": 17.59484089031499,
+      "slope_min_mm_per_rad": -37.546377902020524,
+      "slope_max_mm_per_rad": -17.59484089031499,
+      "strictly_monotone_in_sampled_candidate": true
+    },
+    {
+      "name": "w_link_x-1",
+      "edge_ids": [
+        3,
+        9,
+        14,
+        18
+      ],
+      "representative_edge": 3,
+      "slope_nearest_zero_mm_per_rad": 62.746553150991055,
+      "min_abs_slope_mm_per_rad": 0.29920650571760576,
+      "slope_min_mm_per_rad": -22.751054577922666,
+      "slope_max_mm_per_rad": 72.18244108631806,
+      "strictly_monotone_in_sampled_candidate": false
+    },
+    {
+      "name": "square_x+1_w-1",
+      "edge_ids": [
+        4,
+        5,
+        10,
+        15
+      ],
+      "representative_edge": 4,
+      "slope_nearest_zero_mm_per_rad": 27.170054512471985,
+      "min_abs_slope_mm_per_rad": 17.59484089031499,
+      "slope_min_mm_per_rad": 17.59484089031499,
+      "slope_max_mm_per_rad": 37.546377902020524,
+      "strictly_monotone_in_sampled_candidate": true
+    },
+    {
+      "name": "w_link_x+1",
+      "edge_ids": [
+        6,
+        11,
+        16,
+        19
+      ],
+      "representative_edge": 6,
+      "slope_nearest_zero_mm_per_rad": -62.746553150991055,
+      "min_abs_slope_mm_per_rad": 0.29920650164649576,
+      "slope_min_mm_per_rad": -72.18244109446027,
+      "slope_max_mm_per_rad": 22.751054577922666,
+      "strictly_monotone_in_sampled_candidate": false
+    },
+    {
+      "name": "x_link_w+1",
+      "edge_ids": [
+        20,
+        25,
+        28,
+        31
+      ],
+      "representative_edge": 20,
+      "slope_nearest_zero_mm_per_rad": 0.0,
+      "min_abs_slope_mm_per_rad": 0.0,
+      "slope_min_mm_per_rad": -88.5934274465533,
+      "slope_max_mm_per_rad": 88.5934274465533,
+      "strictly_monotone_in_sampled_candidate": false
+    },
+    {
+      "name": "square_x-1_w+1",
+      "edge_ids": [
+        21,
+        22,
+        26,
+        29
+      ],
+      "representative_edge": 21,
+      "slope_nearest_zero_mm_per_rad": -75.47237362042416,
+      "min_abs_slope_mm_per_rad": 62.360514958025746,
+      "slope_min_mm_per_rad": -77.39812337064902,
+      "slope_max_mm_per_rad": -62.360514958025746,
+      "strictly_monotone_in_sampled_candidate": true
+    },
+    {
+      "name": "square_x+1_w+1",
+      "edge_ids": [
+        23,
+        24,
+        27,
+        30
+      ],
+      "representative_edge": 23,
+      "slope_nearest_zero_mm_per_rad": 75.47237362042416,
+      "min_abs_slope_mm_per_rad": 62.360514958025746,
+      "slope_min_mm_per_rad": 62.360514958025746,
+      "slope_max_mm_per_rad": 77.39812337064902,
+      "strictly_monotone_in_sampled_candidate": true
+    }
+  ],
+  "range_counterexample": {
+    "available": true,
+    "angle_deg": 0.0,
+    "shrink_factor": 0.999,
+    "all_length_limits_satisfied": true,
+    "max_corner_angle_change_deg": 0.0,
+    "equal_length_families_preserved": true,
+    "fixed_scale_path_constraint_error": 0.0050175300425561176,
+    "interpretation": "Exact algebraic counterexample to limits/equalities selecting the fixed-scale path; not a hardware collision check."
+  },
+  "limitations": [
+    "Infinitesimal point-model ranks are not finite mobility or stiffness certificates.",
+    "Scheduled lengths/angles must be coupled to one common phase, not independently limited.",
+    "Four-square construction assumes supported, aligned, square frames and positive phase-branch dot products.",
+    "Cam profiles omit follower geometry, pressure angle, backlash, thickness and collision checks.",
+    "The reduction is for xw rotation only; generic 4D rotations do not preserve these guides."
+  ],
+  "config": {
+    "model": {
+      "plane": "xw",
+      "projection": "perspective",
+      "projection_distance": 4.0,
+      "size_mm": 300.0,
+      "target_size_mm": 150.0,
+      "coarse_step_deg": 1.0,
+      "candidate_start_deg": -15.0,
+      "candidate_end_deg": 15.0,
+      "fine_step_deg": 0.1
+    },
+    "hardware": {
+      "hub_radius_mm": 18.0,
+      "tube_width_mm": 10.0,
+      "tube_wall_mm": 1.5,
+      "slide_clearance_mm": 0.3,
+      "min_overlap_mm": 20.0,
+      "end_wall_mm": 2.0,
+      "ball_radius_mm": 5.0,
+      "neck_radius_mm": 2.0,
+      "socket_clearance_mm": 0.2,
+      "bolt_diameter_mm": 3.0,
+      "hole_clearance_mm": 0.3,
+      "nut_across_flats_mm": 5.5,
+      "nut_thickness_mm": 2.4,
+      "fit_clearances_mm": [
+        0.15,
+        0.25,
+        0.35,
+        0.5
+      ]
+    }
+  },
+  "tables": {
+    "mobility": "mobility.csv",
+    "cam_profiles": "cam_profiles.csv"
+  },
+  "mobility_summary": {
+    "prototype_full": {
+      "samples": 361,
+      "locked_lengths_rank": {
+        "min": 31,
+        "max": 31
+      },
+      "equal_family_rank": {
+        "min": 24,
+        "max": 24
+      },
+      "equal_family_and_yz_right_angles_rank": {
+        "min": 27,
+        "max": 27
+      },
+      "scheduled_lengths_and_selected_angles_rank": {
+        "min": 42,
+        "max": 42
+      },
+      "four_square_constraint_rank": {
+        "min": 7,
+        "max": 7
+      },
+      "locked_lengths_internal_infinitesimal_dof": {
+        "min": 11,
+        "max": 11
+      },
+      "equal_family_internal_infinitesimal_dof": {
+        "min": 18,
+        "max": 18
+      },
+      "equal_family_and_yz_internal_infinitesimal_dof": {
+        "min": 15,
+        "max": 15
+      },
+      "scheduled_internal_infinitesimal_dof": {
+        "min": 1,
+        "max": 1
+      },
+      "four_square_infinitesimal_dof": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "prototype_candidate": {
+      "samples": 301,
+      "locked_lengths_rank": {
+        "min": 31,
+        "max": 31
+      },
+      "equal_family_rank": {
+        "min": 24,
+        "max": 24
+      },
+      "equal_family_and_yz_right_angles_rank": {
+        "min": 27,
+        "max": 27
+      },
+      "scheduled_lengths_and_selected_angles_rank": {
+        "min": 42,
+        "max": 42
+      },
+      "four_square_constraint_rank": {
+        "min": 7,
+        "max": 7
+      },
+      "locked_lengths_internal_infinitesimal_dof": {
+        "min": 11,
+        "max": 11
+      },
+      "equal_family_internal_infinitesimal_dof": {
+        "min": 18,
+        "max": 18
+      },
+      "equal_family_and_yz_internal_infinitesimal_dof": {
+        "min": 15,
+        "max": 15
+      },
+      "scheduled_internal_infinitesimal_dof": {
+        "min": 1,
+        "max": 1
+      },
+      "four_square_infinitesimal_dof": {
+        "min": 1,
+        "max": 1
+      }
+    }
+  }
+}

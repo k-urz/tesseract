@@ -14,6 +14,8 @@
 
 [生成例・分析結果](examples/README.md) / [ビューア・CAD一式をダウンロード](examples/default-pack.zip) / [製作方法の比較](docs/manufacturing.md)
 
+[自然に4D回転へ沿わせる拘束の考察](docs/rotation-constraints.md)：長さ・角度の上下限だけでは経路が決まらないことを数値で確認し、4枚の拡縮する正方形枠を共通位相で連動させる構成を導いた。必要な条件、入力に適した辺、任意回転へ拡張する場合の違いをまとめている。
+
 ZIPを展開した`viewer.html`をブラウザで開くと、回転角・視点・サイズ・部品外形の表示を操作できる。ネット接続やサーバーは不要。
 
 ## 実行方法
@@ -45,11 +47,14 @@ python -m unittest discover -s tests -v
 | `analyze` | 全周・候補区間を両サイズで分析。`analysis.json`、設定スナップショット、辺ごと・角度ごとのCSV、`report.md` |
 | `render` | 分析結果に加え、オフライン`viewer.html`、要求グラフ`requirements.png`、姿勢例`motion.png` |
 | `cad` | 分析結果に加え、`cad/`内に各部品のSTEP/STL、部品表、組立・測定手順、寸法と再検査の記録 |
-| `all` | 上記すべて |
+| `all` | 分析・可視化・CADの一式 |
+| `constraints` | xw透視回転の拘束・微小自由度・操作感度と、4枠の位置／拡縮の目標変位。JSON・CSV・PNG・レポート |
 
 各操作は渡された設定から再計算する。過去の分析ファイルを暗黙に使わない。単位はmm・度、力の実測はN。すき間は片側・半径・直径の別を設定コメントで明示する。
 
 配布用ZIPを更新する場合は、`all`で生成した後に`python scripts/package_example.py --output output`を実行する。設定IDと可視化ファイルのハッシュを検証し、異なる設定の分析・CAD・可視化が混在した場合は梱包を中止する。
+
+拘束の考察は`python -m tesseract constraints --config config/default.toml --output output/rotation-study`で別に生成する。`all`は分析・可視化・CADの一式で、拘束の考察は含まない。[拘束の生成例](examples/constraints/report.md)と[詳細な導出](docs/rotation-constraints.md)を参照。
 
 ### 初期計算で分かったこと
 
